@@ -35,18 +35,31 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 5
+            initialDelaySeconds: 30
+            failureThreshold: 3
+            successThreshold: 1
           readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command: ["redis-cli", "--raw", "incr", "ping"]
+            periodSeconds: 5
+            initialDelaySeconds: 25
+            failureThreshold: 3
+            successThreshold: 1
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: {{ .Values.storage.mountPath }}
+              name: {{ .Release.Name }}-volume
+      volumes:
+        - name: {{ .Release.Name }}-volume
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-pv-claim
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
