@@ -35,16 +35,27 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 80
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+            - secretRef:
+                name: {{ .Release.Name }}-secret
           livenessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command: ["psql", "-w", "-U", "admin", "-d", "postgres", "-c", "SELECT 1"]
+            periodSeconds: 5
+            initialDelaySeconds: 50
+            failureThreshold: 3
+            successThreshold: 1
           readinessProbe:
-            httpGet:
-              path: /
-              port: http
+            exec:
+              command: ["psql", "-w", "-U", "admin", "-d", "postgres", "-c", "SELECT 1"]
+            periodSeconds: 5
+            initialDelaySeconds: 45
+            failureThreshold: 3
+            successThreshold: 1
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
