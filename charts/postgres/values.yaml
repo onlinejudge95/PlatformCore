@@ -77,3 +77,10 @@ affinity: {}
 config:
   POSTGRES_DB: "postgres"
   POSTGRES_USER: "admin"
+
+storage:
+  capacity: 5Gi
+  accessModes:
+    - ReadWriteMany
+  hostPath: "/data/postgres"
+  mountPath: "/var/lib/postgresql/data"
