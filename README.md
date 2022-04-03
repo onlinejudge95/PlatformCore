@@ -9,3 +9,4 @@ PlatformCore
 
 ## TODOs
 1. Fix tests in `postgres`
+1. Fix tests in `redis`
