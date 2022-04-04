@@ -18,6 +18,11 @@ $ helm install k8s-dashboard kubernetes-dashboard/kubernetes-dashboard
 ```bash
 $ kubectl --namespace kube-system describe secret deployment-controller-token-<UUID>
 ```
+4. Set up kubernetes proxy
+```bash
+$ kubectl proxy
+```
+5. Access the dashboard from localhost using this URI `http://localhost:8001/api/v1/namespaces/default/services/https:k8s-dashboard-kubernetes-dashboard:https/proxy/#/login`
 
 ## Secrets
 1. `kubectl create secret generic --from-env-file=./charts/postgres/.env postgres-secret`
